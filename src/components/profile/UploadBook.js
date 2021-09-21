@@ -1,39 +1,25 @@
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
-// import React, { Component } from 'react'
-//  import { Document, Page, pdfjs } from "react-pdf";
-// import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
-// import {Viewer} from '@react-pdf-viewer/core'
-// import {defaultLayoutPlugin} from '@react-pdf-viewer/default-layout'
-// import {Worker} from '@react-pdf-viewer/core';
 
-// pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-//   import  {a}  from '../../a.pdf';
  export default function UploadBook(){
 
-     const [id,setId] = useState("");
+
      const [bookName, setBookName] = useState("");
      const [authorName, setAuthorName] = useState("");
      const [rating, setRating] = useState(0);
      const [category, setCategory] = useState("");
      const [type,setType] = useState("");
-     const [imgUrl, setImgUrl] = useState("");
-     const [pdfUrl, setPdfUrl] = useState("");
+
      const [date, setDate] = useState(new Date());
      const [description, setDesiption] = useState("");
      const [file, setFile] = useState("");     
      const [image,setImage] = useState("");
-     const [imgName, setImgName] = useState("");
-     const [pdfName, setPdfName] = useState("");
      const onSubmitHandler = (e) => {
         
         e.preventDefault();
-        // console.log(this.state)
-        let idGenerated = parseInt(Date.now() + Math.random() + bookName + authorName);
-        // console.log(idGenerated,'this is id gen');
-        setId(idGenerated);
-        setImgName(image.name);
-        setPdfName(file.name);
+     
+        let id = parseInt(Date.now() + Math.random() + bookName + authorName);
+
         console.log(category);
         const bookData = new FormData();
         // fileData.append()
@@ -60,8 +46,8 @@ import React, { useEffect, useState } from "react";
             .then(res => {
                 // console.log(res.data,'data url;');
                 
-                setImgUrl(res.data.imgfileLocation);
-                setPdfUrl(res.data.pdffileLocation);
+                let imgUrl = res.data.imgfileLocation;
+                let pdfUrl = res.data.pdffileLocation;
                 
                 const state = {
                     id: id,
@@ -74,10 +60,8 @@ import React, { useEffect, useState } from "react";
                     pdfUrl: res.data.pdffileLocation,
                     date: date,
                     description: description,
-                    file: file,
-                    image: image,
-                    imgName: imgName,
-                    pdfName: pdfName
+                    imgName: image.name,
+                    pdfName: file.name
                 }
                     axios.post(`${process.env.REACT_APP_SERVER_ADDRESS}/book/`,state)
                     .then(res => {
@@ -201,7 +185,7 @@ import React, { useEffect, useState } from "react";
 
                 </div>
 
-                <button type="submit" className="btn btn-primary mt-1">Submit</button>
+                <button type="submit" className="btn btn-primary mt-1" >Submit</button>
 
 
             </form>
