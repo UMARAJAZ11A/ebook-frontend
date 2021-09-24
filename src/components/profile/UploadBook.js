@@ -48,7 +48,8 @@ import React, { useEffect, useState } from "react";
                 
                 let imgUrl = res.data.imgfileLocation;
                 let pdfUrl = res.data.pdffileLocation;
-                
+                console.log(imgUrl,pdfUrl);
+         
                 const state = {
                     id: id,
                     bookName: bookName,
