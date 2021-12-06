@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
-import { BrowserRouter as Router,Route,Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import {ImBook as BookIcon} from 'react-icons/im'
 import {CgProfile as ProfileIcon} from 'react-icons/cg'
 import {BsSearch as SearchIcon} from 'react-icons/bs'
-import {BiUpload} from 'react-icons/bi'
+// import {BiUpload} from 'react-icons/bi'
 import Dropdown from 'react-bootstrap/Dropdown';
+import axios from 'axios'
 export default class Navbar extends Component {
     constructor(props) {
         super(props)
@@ -17,30 +18,30 @@ export default class Navbar extends Component {
             searchQuerry : '' ,
             searchFor : 'name' ,
             searchValue : '',
-            islogin : this.props.islogin ,
+            islogin : false ,
+            viewType : this.props.viewType?this.props.viewType: null
         }
     
     }
 
-    componentDidUpdate(prevProps){
-        if(this.props.islogin !== prevProps.islogin)
-        {
-            this.setState({
-                islogin : this.props.islogin
-            })
-        }
-    }
 
     onClickLogout(){
-        // this.setState({
-        //     islogin : false , 
-        // })
-        localStorage.removeItem('islogin')
-       
-        localStorage.removeItem('id')
-        console.log(this.state.islogin)
-        
-        window.location.reload()
+
+        const token =localStorage.getItem('token')?localStorage.getItem('token'):false;
+        axios.get(`${process.env.REACT_APP_SERVER_ADDRESS}/logout` ,{ headers: {"Authorization" : `token ${token}`} , withCredentials: true  } )
+        .then(res => {
+            localStorage.removeItem('token');
+            this.setState({
+                islogin : false
+            })
+            console.log(res.data.message);
+            window.location.reload();
+        })
+        .catch(err=>{
+            console.log(err);
+        }
+        )
+
     }
     onChangeOption(e){
          console.log(e.target.value)
@@ -105,9 +106,33 @@ export default class Navbar extends Component {
     }
     componentDidMount(){
         
-        this.setState({
-            islogin : this.props.islogin
-        })
+        const token =localStorage.getItem('token')?localStorage.getItem('token'):false;
+        //  console.log(token);
+        if(token===false)
+        {
+            this.setState({
+
+                islogin : false 
+            }
+            )
+        }
+        else
+        {
+            //authorizing the user
+                axios.get(`${process.env.REACT_APP_SERVER_ADDRESS}/auth`, { headers: {"Authorization" : `token ${token}`} })
+                .then(res => {
+                    this.setState({
+                        islogin : true
+                    })
+                })
+                .catch(err => {
+                    console.log(err);
+                    this.setState({
+                        islogin : false
+                    })
+                })
+        }
+
     }
 
 
@@ -120,7 +145,7 @@ export default class Navbar extends Component {
                     <Link  to ='/home'>
                         <BookIcon size={50}  ></BookIcon>E-Book's
                     </Link>
-
+                    { this.state.viewType ==null ?
                     <form onSubmit ={this.onSubmitHandler}
                     className="w-50 h-75">
                             <div className='border border-secondary ' 
@@ -150,6 +175,9 @@ export default class Navbar extends Component {
                                 </span>
                             </div>
                             </form>
+                            :
+                            <span></span>
+                            }
 
                             {/* <BiUpload size={25}></BiUpload> */}
                         {this.state.islogin ?

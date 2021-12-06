@@ -9,9 +9,14 @@ import reportWebVitals from './reportWebVitals';
 // import 'bootstrap/dist/js/bootstrap.js';
 // import $ from 'jquery';
 // import Popper from 'popper.js';
+import { CookiesProvider } from "react-cookie";
+
+
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <CookiesProvider>
+        <App />
+      </CookiesProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

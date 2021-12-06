@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 
  export default function UploadBook(){
 
@@ -21,13 +21,7 @@ import React, { useEffect, useState } from "react";
         let id = parseInt(Date.now() + Math.random() + bookName + authorName);
 
         console.log(category);
-        const bookData = new FormData();
-        // fileData.append()
-        const config = {
-            headers: {
-                'content-type': 'multipart/form-data'
-            }
-        }
+        let bookData = new FormData();
 
         bookData.append(
             'file',
@@ -35,52 +29,42 @@ import React, { useEffect, useState } from "react";
             `${file.name}`
         );
 
-        // const imageData = new FormData();
         bookData.append(
             'file',
             image,
             `${image.name}`
         );
-        // console.log(this.state.file)
-        axios.post(`${process.env.REACT_APP_SERVER_ADDRESS}/book/${id}`, bookData , config)
+
+        console.log(bookData)
+        const book = {
+            id: id,
+            bookName: bookName,
+            authorName: authorName,
+            rating: rating,
+            category: category,
+            type: type,
+            date: date,
+            description: description,
+            imgName: image.name,
+            pdfName: file.name
+        }
+        const token = localStorage.getItem('token')
+        
+       
+        axios.post(`${process.env.REACT_APP_SERVER_ADDRESS}/book/upload`,bookData , 
+                    { headers: {"Authorization" : `token ${token}`} , withCredentials: true , params :{ book : book } })
             .then(res => {
-                // console.log(res.data,'data url;');
-                
-                let imgUrl = res.data.imgfileLocation;
-                let pdfUrl = res.data.pdffileLocation;
-                console.log(imgUrl,pdfUrl);
-         
-                const state = {
-                    id: id,
-                    bookName: bookName,
-                    authorName: authorName,
-                    rating: rating,
-                    category: category,
-                    type: type,
-                    imgUrl: res.data.imgfileLocation,
-                    pdfUrl: res.data.pdffileLocation,
-                    date: date,
-                    description: description,
-                    imgName: image.name,
-                    pdfName: file.name
-                }
-                    axios.post(`${process.env.REACT_APP_SERVER_ADDRESS}/book/`,state)
-                    .then(res => {
-                        console.log('Data Added Successfully!');
-                    })
-                    .catch(err => {
-                        console.log(`Error : Unable to post the data to local storage : ${err}`);
-                    })
+                 console.log(res.data.message);
                 
             })
             .catch(err => {
-                console.log(`Error : Unable to post the data to google cloud : ${err}`);
+                console.log(`Error : ${err}`);
             })
 
     }
      
      return (
-        <div className="ml-3 ">
+        <div className="ml-5 mt-3">
             <h4>Enter Book Details</h4>
             <form onSubmit={onSubmitHandler} encType='multipart/form-data'>
                     <div className="row mb-1 mr-3">

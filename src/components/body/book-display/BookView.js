@@ -1,34 +1,29 @@
 
-import React,{useState , Component , useEffect} from 'react'
+import React,{useState ,  useEffect} from 'react'
 // import React, { Component } from 'react'
 import axios from 'axios'
-import {BiDownload} from 'react-icons/bi'
-// Import the main component
-import { Viewer } from '@react-pdf-viewer/core'; // install this library
+
+
 // Plugins
-import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout'; // install this library
+// import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout'; // install this library
 // Import the styles
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
-// Worker
-import { Worker } from '@react-pdf-viewer/core'; // install this library
- import { Document } from 'react-pdf'
- import { FaHeart as Like  } from 'react-icons/fa';
-import { FiHeart as UnLike } from 'react-icons/fi';
+
 import { AiOutlineStar,AiFillStar } from 'react-icons/ai';
-import { FaRegBookmark as UnBookmark ,FaBookmark as Bookmark} from 'react-icons/fa'
+// import { FaRegBookmark as UnBookmark ,FaBookmark as Bookmark} from 'react-icons/fa'
 import {BiArrowBack as BackIcon} from 'react-icons/bi'
 import {IoIosStarHalf} from 'react-icons/io'
 
 export default function BookView(props) {
 
   // Create new plugin instance
-  const defaultLayoutPluginInstance = defaultLayoutPlugin();
+  // const defaultLayoutPluginInstance = defaultLayoutPlugin();
   
   // for onchange event
-  const [pdfFile, setPdfFile]=useState(null);
+  // const [pdfFile, setPdfFile]=useState(null);
   const [pdfFileUrl, setPdfFileUrl]=useState(null);
-  const [pdfFileError, setPdfFileError]=useState('');
+  // const [pdfFileError, setPdfFileError]=useState('');
 
   // for submit event
   const [viewPdf, setViewPdf]=useState(false);
@@ -41,7 +36,7 @@ export default function BookView(props) {
 useEffect(() => {
     // Update the document title using the browser API
    // console.log(props.location.state.id, 'this is the id of the book to be displayed')
-
+  // other code
     axios.get(`${process.env.REACT_APP_SERVER_ADDRESS}/book/${props.location.state.id}` , { params: {
         searchFor : 'book'
       }})
@@ -65,6 +60,8 @@ useEffect(() => {
        
     })
     .catch(err => console.log(err))
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     
   },[]);
 
@@ -91,7 +88,7 @@ useEffect(() => {
                   {setStars(totalRating-1,totalStars -1 )}
               </span>
 }
-if(viewPdf==false)
+if(viewPdf===false)
   return (
     <div className ={`container-fluid `} style = {{width:`100%`}}>
 
@@ -104,7 +101,7 @@ if(viewPdf==false)
         <div >
           <div className = {`text-left d-flex`}>
           <div style={{width:'30%',marginRight:'10%'}}>
-                <img  style = {{width : '100%',height:'200px'}}
+                <img  style = {{width : '100%',height:'200px'}} alt=''
                 src ={book.imgUrl}></img>
         </div>
 

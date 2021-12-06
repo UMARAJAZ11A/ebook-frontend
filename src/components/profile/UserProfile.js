@@ -1,63 +1,48 @@
-import React, { Component } from 'react';
+import React, {  useState , useEffect } from 'react';
 import Navbar from '../navbar/Navbar';
 import UploadBook from './UploadBook';
 import DeleteBook from './DeleteBook'
-import {Link,Switch,Route} from 'react-router-dom'
+import {Link,Route} from 'react-router-dom'
 import Profile from './Profile'
 import EditUser from './EditUser';
 import LikedSaved from './LikedSaved';
 import ProfileHome from './ProfileHome';
+import { getUserData } from './profileController'
 // import Navbar from '../navbar/Navbar'
-export default class UserProfile extends Component {
-    constructor(props) {
-        super(props)
-        this.onClickLogout = this.onClickLogout.bind(this);
-        this.state = {
-             islogin : true
-        }
-    }
-    onClickLogout(){
-        this.setState({
-            islogin : false
-       });
-    }
-    componentDidMount(){
-        // if(this.props.location.state!=null)
-        // {
-        //     if(this.props.location.state.islogin ===true)
-        //     this.setState({
-        //         islogin : true
-        //    });
-        //    else
-        //    {
-        //         this.setState({
-        //             islogin : false
-        //     });
-        //    }
-        // }
-        // else
-        // {
-        //     this.setState({
-        //         islogin : false
-        //    });
-        // }
-    }
-    render() {
-        if(this.state.islogin)
+export default function UserProfile() {
+
+    const [user , setUser ] = useState(false);
+    useEffect(() => {
+
+        //fetch id from backend...
+            getUserData('me' , null , null)
+            .then(res => {
+                setUser(res.data.data) ;     
+            })
+            .catch(err => {
+                console.log(`Error : unable to load user data : ${err}`)
+            }) 
+              
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+        
+    
+        if(user)
         {
             return (
                 <div>
-                    {/* <Navbar></Navbar> */}
-                    <Profile></Profile>
-                    <Route path = '/profile/home' component ={ProfileHome}></Route>
+                    <Navbar viewType='profile' />
+                    <Profile style={{width : "15%"}} user = {user} ></Profile>
+                    <div style={{ marginLeft: "15%"}}>
+                    <Route path = '/profile/home' component ={ProfileHome}> <ProfileHome user = {user}></ProfileHome> </Route>
                     <Route path = '/profile/addbooks' component ={UploadBook}></Route>
                     <Route path = "/profile/deletebooks" component = {DeleteBook}></Route>
-                    {/* <button onClick ={this.onClickLogout} className ="btn btn-primary m-3">Logout</button> */}
-                    {/* <Link to = '/home/' className = 'm-4 h5'>overview</Link> */}
-                    {/* <UploadBook></UploadBook> */}
-                    <Route path='/profile/edit' component ={EditUser}></Route>
+
+                    <Route path='/profile/edit' > <EditUser user = {user}></EditUser> </Route>
                     <Route path='/profile/liked' ><LikedSaved type = {'liked'}/> </Route>
                     <Route path='/profile/saved' ><LikedSaved type= {'saved'}/> </Route>
+                    </div>
                 </div>
             )
         }
@@ -71,5 +56,5 @@ export default class UserProfile extends Component {
                 </div>
             )
         }
-    }
+    
 }

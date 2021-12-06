@@ -1,36 +1,37 @@
-import React, { Component , useState , useEffect} from 'react'
+import React, {  useState , useEffect} from 'react'
 import BookContainer from './BookContainer';
-import {Link} from 'react-router-dom';
+
 import axios from 'axios' ;
 
 
 export default function BookListComponent(props) {
 
-    const category = props.category;
-    const searchForColumn = props.searchForColumn ;
-    const searchInColumn = props.searchInColumn ; 
-    const searchValue = props.searchValue ; 
-    const matchType = props.matchType;
-    const [list,setList] = useState(props.list) ;
-    const [listType,setListType] = useState(props.listType) ;
     const [books, setBooks] = useState([]);
+    
     const viewType = props.viewType;
+    const  query = {}; 
+    // const login = props.login ;
+    if(props.column) query.column = props.column ;
+    if(props.field)  query.field =  props.field ; 
+    if(props.fieldValue)  query.fieldValue = props.fieldValue ; 
+    if(props.searchType)  query.searchType = props.searchType ; 
+    if(props.lowerLimit)  query.lowerLimit = props.lowerLimit ; 
+    if(props.upperLimit)  query.upperLimit = props.upperLimit ; 
 
 
     useEffect(() => {
         //  console.log(process.env.REACT_APP_SERVER_ADDRESS)
-        axios.get(`${process.env.REACT_APP_SERVER_ADDRESS}/book/`, { params: {
-            searchForColumn : searchForColumn ,
-            searchInColumn : searchInColumn ,
-            searchValue : searchValue ,           
-          }})
+        axios.get(`${process.env.REACT_APP_SERVER_ADDRESS}/books/`, { params: query})
         .then(res =>{
             //console.log(res.data);
                setBooks(res.data)  ;
         })
         .catch(err => console.log(err,'1'))
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         
-    }, [searchForColumn,searchValue,searchInColumn])
+    }, [props ])
+
 
 
     const displayBooks = () =>
@@ -44,17 +45,22 @@ export default function BookListComponent(props) {
                 liked : book.liked ,
                 imgUrl : book.imgUrl ,
                 
-            }
+            } 
+
             if(viewType==='vertical')
             return <BookContainer 
                                     viewType = 'Card'
                                     state = {val} 
-                                    key={indx}/>
+                                    key={indx}
+                                    login = {props.login}
+                                    />
             else
             return <BookContainer 
                                     viewType = 'Frame'
                                     state = {val} 
-                                    key={indx}/>             
+                                    key={indx}
+                                    login = {props.login}
+                                    />             
                     
         })
 

@@ -1,35 +1,42 @@
-import React,{useEffect,useState} from 'react'
-import axios from 'axios'
+import React from 'react'
 
-export default function ProfileHome() {
+
+export default function ProfileHome(props) {
     
-    const [user,setUser] = useState('');
-    useEffect(() => {
+    const user = props.user;
 
-        //fetch id from backend...
-        const id = localStorage.getItem('id')
-       
-            axios.get(`${process.env.REACT_APP_SERVER_ADDRESS}/create/`,{ params: {
-                id : id
-              }} )
-            .then(res => {
-                // console.log(res.data[0])
-                setUser(res.data[0])
-            })  
-            .catch(err => {
-    
-                console.log(`Error : unable to load user data : ${err}`)
-            })    
-              
-
-    }, [])
     return (
-        <div className='ml-3'>
-            <h3>Welcome {user.firstName} !</h3>
+        <div className='ml-4'>
+            <h1 style={{textAlign : 'center' , paddingTop : '50px' }} className='text-secondary'>
+                Welcome to the Dashboard {user.firstName} !</h1>
+                <h3 style={{textAlign : 'center' , marginBottom : '150px'}} className='text-secondary'>
+                    You are a {user.role} !</h3>
            <br/>
-           <h4>Name:::::{user.firstName}{' '}{user.lastName}</h4>
-           <h4>Gender::::{user.gender}</h4>
-           <h4>Date Of Birth::{user.dateOfBirth}</h4>
+           <div className='d-flex w-75 m-auto'>
+                <div >
+                    <img style={{height : '300px'}} src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCy6aOJbmGrqdsdOBPCp2_lfPv3Z-QFReD4A&usqp=CAU" alt=''>
+                    </img>
+                </div>
+                <div className='ml-5 p-4 d-flex'>
+                    <div>
+                        <h2 className='text-secondary'>Email    </h2>
+                        <h2 className='text-secondary'>First Name    </h2>
+                        <h2 className='text-secondary'>Last Name    </h2>
+                        <h2 className='text-secondary'>Gender    </h2>
+                        <h2 className='text-secondary'>Date Of Birth    </h2>
+
+                    </div>
+                    <div className='ml-4'>
+                            <h2 className='text-info'> {user.email}</h2>
+                            <h2 className='text-info'> {user.firstName}</h2>
+                            <h2 className='text-info'> {user.lastName}</h2>
+                            <h2 className='text-info'> {user.gender}</h2>
+                            <h2 className='text-info'> {user.dateOfBirth}</h2>
+                    </div>
+
+                </div>
+
+           </div>
 
         </div>
     )

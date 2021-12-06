@@ -31,10 +31,7 @@ export default class Create extends Component {
              }
         }
     }
-    componentDidMount(){
-        
-      
-    }
+    
     onChangeFirstName(e){
         const btn = document.querySelector('button');
         if(/\s/g.test(e.target.value)===false&&e.target.value.length>2)
@@ -136,7 +133,7 @@ export default class Create extends Component {
     onChangeEmail(e){
         const btn = document.querySelector('button');
         const validEmailRegex = 
-        RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
+        RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/);
         if(!validEmailRegex.test(e.target.value))
         {       this.setState({
                     email : e.target.value,
@@ -154,7 +151,7 @@ export default class Create extends Component {
         }
     }
     onChangePassword(e){
-        const validPasswordRegex = RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})")
+        const validPasswordRegex = RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^\w\s]).{8,}$/)
         const btn = document.querySelector('button');
         if(!validPasswordRegex.test(e.target.value))
         {       this.setState({
@@ -197,8 +194,14 @@ export default class Create extends Component {
                     password    : this.state.password,
                 }
                 //console.log(user);
-                axios.post(`${process.env.REACT_APP_SERVER_ADDRESS}/create/`,user)
+                axios.post(`${process.env.REACT_APP_SERVER_ADDRESS}/register/`,user , {
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                     withCredentials: true ,
+                })
                 .then(res => {
+                    localStorage.setItem('token', res.data.token);
                     console.log(`User Profile Created Successfully! : ${res}`);
         
                 })
@@ -206,6 +209,8 @@ export default class Create extends Component {
                     console.log(`Error : Can't Create User Profile : ${err}`);
                 });
         })
+
+        window.location = '/home';
 
     }
     render() {

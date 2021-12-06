@@ -1,4 +1,4 @@
-import React, { Component ,useState,useEffect} from 'react'
+import React, { useState,useEffect} from 'react'
 import BookListComponent from './BookListComponent'
 import {BiArrowBack as BackIcon} from 'react-icons/bi'
 import {IoIosArrowForward as ForwardIcon} from 'react-icons/io'
@@ -9,6 +9,7 @@ import axios from 'axios'
 export default function Booklist(props) {
     
     const [view,setView] = useState(false);
+    
     const [numberOfTabs, setNumberOfTabs] = useState(0);
     const [printQuery, setPrintQuery] = useState('')
     const [lowerLimit, setLowerLimit] = useState(0);
@@ -16,10 +17,10 @@ export default function Booklist(props) {
 
     useEffect(() => {
 
-        axios.get(`${process.env.REACT_APP_SERVER_ADDRESS}/book/`, { params: {
-            searchForColumn : 'distinct category',
-            searchInColumn : `` ,
-            searchValue : `LIMIT 0,3` ,
+        axios.get(`${process.env.REACT_APP_SERVER_ADDRESS}/books/`, { params: {
+            column : 'distinct category',
+            lowerLimit : '0' ,
+            upperLimit : `3` ,
           }})
         .then(res =>{
             let categories = [];
@@ -29,15 +30,20 @@ export default function Booklist(props) {
             setCategoryList(categories)
         })
         .catch(err => console.log(err,'1'))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     useEffect(() => {
         if(props.query!=null)
         {
             setPrintQuery(<BookListComponent  
-                searchForColumn = '*'
-                searchInColumn ={`where ${props.query.searchFor} like ` + `'`+`%`+`${props.query.searchValue}`+`%`+`'`} 
-                searchValue = {`LIMIT 0,10`} 
-                viewType = 'vertical'/>)
+                column = '*'
+                field = {props.query.searchFor}
+                fieldValue = {props.query.searchValue}
+                searchType = 'like'
+                lowerLimit = '0'
+                upperLimit = '10'
+                viewType = 'vertical'
+                login={props.login}/>)
         }
         else
         {
@@ -47,7 +53,7 @@ export default function Booklist(props) {
 
     const viewMore = (cat) =>{
         axios.get(`${process.env.REACT_APP_SERVER_ADDRESS}/book/`,{ params : {
-            searchForColumn : `count(case category when `+`'`+ `${cat}` + `' then 1 else null end) as Count`,
+            searchForColumn : `count(case category when '${cat}' then 1 else null end) as Count`,
             searchInColumn : `` ,
             searchValue : `` ,
           }})
@@ -67,16 +73,17 @@ export default function Booklist(props) {
                         <div className ="container-fluid d-flex">
                                 <h5 className ="w-50 text-left ml-4">{cat}</h5>
                                 <h5 className ="h6 w-50 text-right mr-4">
-                                    <a href = "#" onClick={() => viewMore(cat)}>View More</a>
+                                    <span className="btn btn-link" onClick={() => viewMore(cat)}>View More</span>
                                 </h5>
                         </div>
                         <BookListComponent  
-                                    
-                                    searchForColumn = '*'
-                                    searchInColumn ={`where category=`+ `'` + `${cat}` + `'`} 
-                                    searchValue = {`LIMIT 0,6`} 
+                                    column = '*'
+                                    field = 'category'
+                                    fieldValue = {cat}
+                                    lowerLimit = '0'
+                                    upperLimit = '6'
                                     viewType = 'horizontal'
-                                    />
+                                    login={props.login}/>
                     </span>
         })
     }
@@ -91,7 +98,7 @@ export default function Booklist(props) {
 
     }
 
-    if(props.query==null&&view==false)
+    if(props.query===null&&view===false)
     return (
         <div className = ' mt-4 p-0'>
             {displayCategoryList()}
@@ -103,28 +110,29 @@ export default function Booklist(props) {
             
             <div className = ' mt-4 p-0'>
 
-                {   view!=false && props.query==null ?
+                {   view!==false && props.query===null ?
                     <span>
                         <div className='ml-5 mb-3'>
-                            <a href='#' onClick={() => setView(false)}>
-                                    <BackIcon size={25} color={'black'}/></a>
+                            <span className="btn btn-link" onClick={() => setView(false)}>
+                                    <BackIcon size={25} color={'black'}/></span>
 
                         </div>
                                 <BookListComponent  
-                                    
-                                    searchForColumn = '*'
-                                    searchInColumn ={`where category=`+ `'` + `${view}` + `'`} 
-                                    searchValue = {`LIMIT ${lowerLimit},${lowerLimit+5}`} 
+                                    column = '*'
+                                    field = 'category'
+                                    fieldValue = {view}
+                                    lowerLimit = {lowerLimit}
+                                    upperLimit = {lowerLimit + 5}
                                     viewType = 'vertical'
-                                    />
+                                    login={props.login}/>
                         <div className='text-center'>
-                            
-                            <a href='#'>
+                        
+                            <span className="btn btn-link">
                             <BackwardIcon size={30} onClick={() => changeTab(-5)}></BackwardIcon>
-                            </a>
-                            <a href="#">
+                            </span>
+                            <span className="btn btn-link">
                             <ForwardIcon size={30} onClick={() => changeTab(5)}></ForwardIcon>
-                            </a>
+                            </span>
                         </div>                        
                     </span>
                     :

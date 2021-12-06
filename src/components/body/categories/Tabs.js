@@ -1,44 +1,70 @@
-import React, { Component , useEffect , useState } from 'react'
+import React, {  useEffect , useState } from 'react'
 import BookListComponent from '../book-display/BookListComponent';
-import {BiArrowBack as BackIcon} from 'react-icons/bi'
+// import {BiArrowBack as BackIcon} from 'react-icons/bi'
 import {IoIosArrowForward as ForwardIcon} from 'react-icons/io'
 import {IoIosArrowBack as BackwardIcon} from 'react-icons/io'
 import axios from 'axios';
 
 export default function Tabs(props) {
     const tabItem = props.tabItem ;
-    const [numberOfTabs, setNumberOfTabs] = useState(0);
-    const [currentTab, setCurrentTab] = useState(0)
-    const [list, setList] = useState('')
-    const [tabItemList, setTabItemList] = useState([])
-    const [view,setView] = useState(false)
+    
+    // const [list, setList] = useState('')
+    const [tabItemList, setTabItemList] = useState([]) ;
+    const [view,setView] = useState(false);
+    const [index , setIndex] = useState(0);
+    const [maxIndex , setMaxIndex] = useState(Infinity)
     useEffect(() => {
-        axios.get(`${process.env.REACT_APP_SERVER_ADDRESS}/book/`, { params: {
-            searchForColumn : `distinct ${tabItem}`,
-            searchInColumn : ``,
-            searchValue :``,
-            
+        axios.get(`${process.env.REACT_APP_SERVER_ADDRESS}/book/list`, { params: {
+            field : tabItem ,
+            limit : 10 ,
+            index : index 
           }})
         .then(res =>{
-                // console.log(res.data)
-                setTabItemList(res.data)  ;
-                setNumberOfTabs(Math.ceil(res.data.length/10))
+                
+                setTabItemList(res.data.data)  ;
+                
 
         })
         .catch(err => console.log(err,'1'))
         
     }, [tabItem])
+
+    useEffect(() => {
+        
+        axios.get(`${process.env.REACT_APP_SERVER_ADDRESS}/book/list`, { params: {
+            field : tabItem ,
+            limit : 10 ,
+            index : index 
+          }})
+        .then(res =>{
+                
+
+                if(res.data.length>0)
+                setTabItemList(res.data.data)  ;
+                else
+                {
+                    setMaxIndex(index-10);
+                }
+                
+
+        })
+        .catch(err => console.log(err,'1'))
+        // setList(displaytabItemList());
+    }, [index])
+
+
+
     const viewtabItemBook = (val) => {
         console.log(val)
         setView(val);
     }
+
     const displaytabItemList = () => {
 
         return tabItemList.map((cat , indx) => {
-            // console.log(currentTab)
-            if(indx>=currentTab&&indx<10+currentTab)
+
             return  <tr key={indx}>
-                        <th scope="row">{indx+1}</th>
+                        <th scope="row">{ index<maxIndex ? index+1 + indx : maxIndex + 1 + indx }</th>
                         <td                         
                                     onClick = {() => viewtabItemBook(Object.values(cat)[0])}
                                     key={indx}
@@ -47,26 +73,16 @@ export default function Tabs(props) {
                                 
                         </td>
                     </tr>
+            
         }) 
     }
-useEffect(() => {
-        setList(displaytabItemList());
-}, [currentTab,tabItem,tabItemList])
 
-const changeTab = (indx) => {
-    let limit = currentTab + indx;
-    if(limit<0||limit>numberOfTabs*10-10)
-    {
-        limit = 0;
-    }
-    setCurrentTab(limit)
-    
-}
 
-    if(view==false)
+
+    if(view===false)
     return (
         <div className="container-fluid ml-5 mt-4 list-group" style={{fontSize:'18px'}}>
-        
+            
            
             {
                 tabItemList!='' ?
@@ -79,7 +95,7 @@ const changeTab = (indx) => {
                                 </tr>
                             </thead>
                             <tbody> 
-                                 {list}
+                                 { displaytabItemList() }
                             </tbody>
                             </table>
                 </div>
@@ -91,12 +107,12 @@ const changeTab = (indx) => {
             {/* <div className='text-center'>{displayTabs(Math.ceil(tabItemList.length/10))}</div> */}
             <div className='text-center'>
                             
-                            <a href='#'>
-                            <BackwardIcon size={30} onClick={() => changeTab(-10)}></BackwardIcon>
-                            </a>
-                            <a href="#">
-                            <ForwardIcon size={30} onClick={() => changeTab(10)}></ForwardIcon>
-                            </a>
+                            <span className='btn btn-link'>
+                            <BackwardIcon size={30} onClick = {() => setIndex(index>0 ? index-10 : index)}  ></BackwardIcon>
+                            </span>
+                            <span className='btn btn-link'>
+                            <ForwardIcon size={30} onClick = {() => setIndex(index<maxIndex ? index+10 : index)}  ></ForwardIcon>
+                            </span>
             </div> 
        
     </div>
@@ -110,11 +126,12 @@ const changeTab = (indx) => {
 
         </div>
         <BookListComponent  
-            searchForColumn = '*'
-            searchInColumn ={`where ${tabItem}=`+ `'` + `${view}` + `'`} 
-            searchValue = {`LIMIT 0,5`} 
-            viewType = 'vertical'
-            />
+                                            column = '*'
+                                            field = {tabItem}
+                                            fieldValue = {view}
+                                            lowerLimit = '0'
+                                            upperLimit = '5'
+                                            viewType = 'vertical'/>
            
         </div>
         

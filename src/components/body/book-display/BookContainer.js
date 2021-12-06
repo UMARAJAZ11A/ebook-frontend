@@ -1,5 +1,5 @@
-import { Button } from 'bootstrap';
-import React, { Component , useState } from 'react'
+
+import React, {  useEffect, useState } from 'react'
 import { FaHeart as Like  } from 'react-icons/fa';
 import { FiHeart as UnLike } from 'react-icons/fi';
 import { AiOutlineStar,AiFillStar } from 'react-icons/ai';
@@ -20,27 +20,51 @@ export default function BookContainer(props) {
     const bookUrl = '/bookview';
     const [like, setLike] = useState(false);
     const [bookmark, setBookmark] = useState(false);
-    const islogin = JSON.parse(localStorage.getItem('islogin'))?true:false;
-    const userId = localStorage.getItem('id');
+    const islogin = props.login;
     
+    useEffect(() => {
+        if(islogin === true)
+        {
+            
+            //Route to get the book is liked / saved or not 
+            // axios.get(`${process.env.REACT_APP_SERVER_ADDRESS}/me/book/`)
+            // To check if boook is liked by user or not 
+            const token = localStorage.getItem('token')
+            const params = { id : id }
+            axios.get(`${process.env.REACT_APP_SERVER_ADDRESS}/me/favourite`,{ headers: {"Authorization" : `token ${token}`} , withCredentials: true , params : params })
+            .then(res => {
+                setLike(res.data.data.liked) ;
+                setBookmark(res.data.data.saved) ;
+                
+            })  
+            .catch(err => {
+                console.log(err);
+                
+            })              
+        } 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[])
     const bookSaveLike = (key , value) => {
 
-        axios.post(`${process.env.REACT_APP_SERVER_ADDRESS}/create/${id}`,{
+        const token = localStorage.getItem('token')
+        const body = {
             key : key ,
-            value : value ,
-            userId : userId ,
+            value : value === true ? `add` : `remove` ,
             bookId : id
-        })
+        }
+        axios.put(`${process.env.REACT_APP_SERVER_ADDRESS}/me/books`,body ,{ headers: {"Authorization" : `token ${token}`} , withCredentials: true  })
         .then(res => {
-            console.log(`${key} Book With Id : ${id}`)
-        })
+             console.log(res.data.message)
+           
+        })  
         .catch(err => {
             console.log(err);
-        })
+        }) 
+
     }
 
     const onClickLike = () =>{       
-        if(islogin===true){
+        if(islogin === true){
             bookSaveLike('liked' , like === false?true:false);
             setLike(like === false?true:false);
         }
@@ -91,8 +115,9 @@ export default function BookContainer(props) {
 
 
                     <div >
-                        <img  style = {{width : '100%',height:'180px'}}
-                        src ={imgUrl}></img>
+                        <img  style = {{width : '100%',height:'180px'}} 
+                        src ={imgUrl}
+                        alt=''></img>
                     </div>
 
             
@@ -145,7 +170,7 @@ export default function BookContainer(props) {
                     
                     <span   className ="btn btn-link p-0 m-0"
                             onClick = {() =>onClickSave()}>
-                                {bookmark===true?
+                                {bookmark === true?
                                     <Bookmark size ={18} color ="#696969"/>
                                     :
                                     <UnBookmark size ={18} color ="#696969"/>
@@ -170,7 +195,8 @@ export default function BookContainer(props) {
 
                 <div style={{width:'30%',marginRight:'10%'}}>
                         <img  style = {{width : '100%',height:'180px'}}
-                        src ={imgUrl}></img>
+                        src ={imgUrl}
+                        alt=''></img>
                 </div>
 
             
@@ -205,7 +231,7 @@ export default function BookContainer(props) {
                         <span   className =" btn btn-link p-0 m-0" 
                                 onClick = {() =>onClickLike()}>
                                     
-                                    {like===true?
+                                    {like === true?
                                         <Like color ="red" size ={20}/>
                                         :
                                         <UnLike color='red' size={20}/>
@@ -221,7 +247,7 @@ export default function BookContainer(props) {
                         </span>
                         <span   className ="btn btn-link p-0 m-0"
                                 onClick = {() => onClickSave()}>
-                                    {bookmark===true?
+                                    {bookmark === true?
                                         <Bookmark size ={20} color ="#696969"/>
                                         :
                                         <UnBookmark size ={20} color ="#696969"/>

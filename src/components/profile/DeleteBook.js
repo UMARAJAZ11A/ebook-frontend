@@ -37,7 +37,7 @@ export default class DeleteBook extends Component {
     }
     render() {
         return (
-            <div className="ml-3">
+            <div className="ml-5 mt-3">
                
                 <h4>Delete Book with specific Id</h4>
                 <form onSubmit={this.onSubmitHandler}>

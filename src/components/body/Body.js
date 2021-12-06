@@ -1,9 +1,9 @@
-import React, { Component } from 'react'
-import { BrowserRouter as Router,Route,Switch,Redirect} from 'react-router-dom';
+import React from 'react'
+import { Route,Switch} from 'react-router-dom';
 import Booklist from './book-display/Booklist'
 import Tabs from './categories/Tabs';
 import BodyNav from './BodyNav'
-import Authors from './authors/Authors';
+
 
 
 export default function Body(props) {
@@ -15,7 +15,7 @@ export default function Body(props) {
         {/* <Booklist></Booklist> */}
         <Switch>
             
-            <Route path ='/home/' exact ><Booklist query={props.query}/></Route>
+            <Route path ='/home/' exact ><Booklist query={props.query} login={props.login} /></Route>
             {/* <Redirect from = '/home/' exact to = '/home/overview'></Redirect> */}
             {/* <Route path ='/bookview' ><BookView/></Route> */}
             <Route path ='/home/categories' exact ><Tabs tabItem ='category' key={0}/></Route>
