@@ -11,5 +11,6 @@ jobs:
         with:
           node-version: '14'
       - run: npm install -g bats
-      - name: Version 
       - run: bats -v
+      - run: npm install nodemon
+      - run: nodemon -v
