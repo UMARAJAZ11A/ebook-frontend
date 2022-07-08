@@ -13,4 +13,4 @@ jobs:
       - run: npm install -g bats
       - run: bats -v
       - run: npm install nodemon
-      - run: nodemon -v
+      - run: npm run build
